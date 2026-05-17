@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarkari Result Clone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #222; line-height: 1.6; }
+        a { text-decoration: none; color: #0056b3; }
+        a:hover { color: #c00; }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #8B0000 0%, #c0392b 50%, #8B0000 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 4px solid #FFD700;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .header .tagline {
+            font-size: 0.95rem;
+            margin-top: 6px;
+            color: #ffe4e1;
+            font-weight: 500;
+        }
+        .header .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .logo-icon {
+            width: 50px; height: 50px; background: #FFD700;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #8B0000; font-weight: 900; font-size: 1.4rem;
+            border: 3px solid white;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .navbar {
+            background: #222;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .navbar a {
+            color: white;
+            padding: 12px 22px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: block;
+            transition: background 0.3s;
+            border-right: 1px solid #444;
+        }
+        .navbar a:hover { background: #c0392b; }
+        .navbar a:last-child { border-right: none; }
+        .mobile-menu-btn {
+            display: none;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            background: #e8e8e8;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .search-bar input {
+            padding: 10px 15px;
+            width: 320px;
+            max-width: 90%;
+            border: 2px solid #8B0000;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .search-bar button {
+            padding: 10px 24px;
+            background: #8B0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .search-bar button:hover { background: #c0392b; }
+
+        /* ===== TICKER / LATEST UPDATES ===== */
+        .ticker-wrap {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .ticker-label {
+            display: inline-block;
+            background: #c0392b;
+            color: white;
+            padding: 10px 18px;
+            font-weight: 700;
+            z-index: 2;
+            position: relative;
+        }
+        .ticker {
+            display: inline-block;
+            padding-left: 10px;
+            animation: tickerScroll 25s linear infinite;
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker span {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .ticker span::before {
+            content: "🔔 ";
+        }
+
+        /* ===== HIGHLIGHT BUTTONS ===== */
+        .highlight-section { padding: 25px 15px; background: #fafafa; }
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .h-btn {
+            padding: 16px 10px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        .h-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .h-jobs { background: #e74c3c; }
+        .h-results { background: #2980b9; }
+        .h-admit { background: #27ae60; }
+        .h-answer { background: #8e44ad; }
+        .h-syllabus { background: #d35400; }
+        .h-courses { background: #16a085; }
+        .h-btn a { color: white; display: block; }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            padding: 20px 15px;
+        }
+        .content-area { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .card-header {
+            padding: 14px 18px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-body { padding: 12px 18px; }
+        .card-body ul { list-style: none; }
+        .card-body li {
+            border-bottom: 1px dashed #ddd;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .card-body li:last-child { border-bottom: none; }
+        .card-body li::before {
+            content: "▸";
+            color: #c0392b;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+        .card-body a:hover { text-decoration: underline; }
+        .card-body .new-tag {
+            background: #e74c3c;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 6px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .bg-red { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+        .bg-blue { background: linear-gradient(90deg, #2980b9, #3498db); }
+        .bg-green { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .bg-purple { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
+        .bg-orange { background: linear-gradient(90deg, #d35400, #e67e22); }
+        .bg-teal { background: linear-gradient(90deg, #16a085, #1abc9c); }
+        .bg-dark { background: linear-gradient(90deg, #2c3e50, #34495e); }
+        .bg-navy { background: linear-gradient(90deg, #1a237e, #283593); }
+        .bg-maroon { background: linear-gradient(90deg, #800000, #a52a2a); }
+
+        /* ===== TABLE ===== */
+        .job-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+        .job-table th, .job-table td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .job-table th {
+            background: #8B0000;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .job-table tr:nth-child(even) { background: #f9f9f9; }
+        .job-table tr:hover { background: #fff3cd; }
+        .job-table .apply-btn {
+            background: #27ae60;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        .job-table .apply-btn:hover { background: #219a52; }
+
+        /* ===== TOP 10 ===== */
+        .top10-list { counter-reset: top10; }
+        .top10-list li::before {
+            counter-increment: top10;
+            content: counter(top10) ".";
+            color: #c0392b;
+            font-weight: 900;
+            min-width: 28px;
+            display: inline-block;
+        }
+
+        /* ===== STATE & QUALIFICATION ===== */
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            padding: 15px;
+        }
+        .tag-btn {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 8px 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.2s;
+        }
+        .tag-btn:hover { background: #c0392b; color: white; border-color: #c0392b; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            background: #8B0000;
+            color: white;
+            padding: 12px 15px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .sidebar-body { padding: 12px 15px; }
+        .sidebar-body ul { list-style: none; }
+        .sidebar-body li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.9rem;
+        }
+        .sidebar-body li:last-child { border-bottom: none; }
+        .sidebar-body a { color: #0056b3; }
+        .sidebar-body a:hover { color: #c0392b; }
+        .quick-btn {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        .quick-btn:hover { opacity: 0.85; color: white; }
+        .qb-red { background: #e74c3c; }
+        .qb-blue { background: #2980b9; }
+        .qb-green { background: #27ae60; }
+        .qb-purple { background: #8e44ad; }
+        .qb-orange { background: #d35400; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #1a1a2e;
+            color: #ccc;
+            padding: 40px 15px 20px;
+            margin-top: 20px;
+        }
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+        }
+        .footer-col h3 {
+            color: #FFD700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { padding: 5px 0; font-size: 0.9rem; }
+        .footer-col a { color: #aaa; }
+        .footer-col a:hover { color: #FFD700; }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 25px;
+            margin-top: 25px;
+            border-top: 1px solid #333;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* ===== HIDDEN BY SEARCH ===== */
+        .hidden-item { display: none !important; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .navbar { display: none; flex-direction: column; }
+            .navbar.active { display: flex; }
+            .navbar a { border-right: none; border-bottom: 1px solid #444; text-align: center; }
+            .mobile-menu-btn { display: block; }
+            .main-container { grid-template-columns: 1fr; }
+            .search-bar input { width: 100%; }
+            .highlight-grid { grid-template-columns: repeat(2, 1fr); }
+            .job-table { font-size: 0.8rem; }
+            .job-table th, .job-table td { padding: 6px 8px; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+    <div class="logo-area">
+        <div class="logo-icon">SR</div>
+        <div>
+            <h1>Sarkari Result Clone</h1>
+            <div class="tagline">Government Jobs | Results | Admit Cards | All in One Place</div>
+        </div>
+    </div>
+</header>
+
+<!-- ===== NAVIGATION ===== -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.navbar').classList.toggle('active')">☰ Menu</button>
+<nav class="navbar">
+    <a href="#home">Home</a>
+    <a href="#latest-jobs">Latest Jobs</a>
+    <a href="#results">Results</a>
+    <a href="#admit-cards">Admit Card</a>
+    <a href="#answer-key">Answer Key</a>
+    <a href="#syllabus">Syllabus</a>
+    <a href="#courses">Courses</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<!-- ===== SEARCH BAR ===== -->
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search jobs, results, admit cards...">
+    <button onclick="performSearch()">Search</button>
+</div>
+
+<!-- ===== LATEST UPDATES TICKER ===== -->
+<div class="ticker-wrap">
+    <span class="ticker-label">Latest Updates</span>
+    <div class="ticker">
+        <span>UP Police Recruitment 2026 – Apply Online</span>
+        <span>SSC CGL Result 2025 – Check Now</span>
+        <span>Railway Group D Admit Card Released</span>
+        <span>IBPS PO 2025 Notification Out</span>
+        <span>NDA 2 Exam Date Announced</span>
+        <span>UPSC Civil Services Prelims Result</span>
+        <span>CTET December 2025 Online Form</span>
+        <span>Indian Army Agniveer Rally Bharti</span>
+        <!-- duplicate for seamless scroll -->
+        <span>UP Police Recruitment 2026 – Apply Online</span>
+        <span>SSC CGL Result 2025 – Check Now</span>
+        <span>Railway Group D Admit Card Released</span>
+        <span>IBPS PO 2025 Notification Out</span>
+        <span>NDA 2 Exam Date Announced</span>
+        <span>UPSC Civil Services Prelims Result</span>
+        <span>CTET December 2025 Online Form</span>
+        <span>Indian Army Agniveer Rally Bharti</span>
+    </div>
+</div>
+
+<!-- ===== HIGHLIGHT BUTTONS ===== -->
+<section class="highlight-section">
+    <div class="highlight-grid">
+        <div class="h-btn h-jobs"><a href="#latest-jobs">Latest Jobs</a></div>
+        <div class="h-btn h-results"><a href="#results">Results</a></div>
+        <div class="h-btn h-admit"><a href="#admit-cards">Admit Card</a></div>
+        <div class="h-btn h-answer"><a href="#answer-key">Answer Key</a></div>
+        <div class="h-btn h-syllabus"><a href="#syllabus">Syllabus</a></div>
+        <div class="h-btn h-courses"><a href="#courses">Courses</a></div>
+    </div>
+</section>
+
+<!-- ===== MAIN CONTAINER ===== -->
+<div class="main-container">
+    <div class="content-area">
+
+        <!-- ===== LATEST JOBS ===== -->
+        <section class="card" id="latest-jobs">
+            <div class="card-header bg-red">Latest Jobs</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#">UP Police Constable Recruitment 2026 – 50000+ Posts</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">SSC CGL 2025 Tier II Online Form</a></li>
+                    <li><a href="#">Railway RRB NTPC 2025 Notification</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">IBPS Clerk 2025 – 6000+ Vacancies</a></li>
+                    <li><a href="#">Indian Air Force Agniveer Vayu Intake</a></li>
+                    <li><a href="#">UPPSC PCS 2025 Prelims Online Form</a></li>
+                    <li><a href="#">Bihar Police SI Recruitment 2025</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">Rajasthan Patwari Bharti 2025</a></li>
+                    <li><a href="#">MPPSC State Service Exam 2025</a></li>
+                    <li><a href="#">Delhi Police Head Constable Ministerial</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== RESULTS ===== -->
+        <section class="card" id="results">
+            <div class="card-header bg-blue">Results</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#">SSC CGL 2025 Tier I Result Declared</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">UPSC NDA 1 2025 Final Result</a></li>
+                    <li><a href="#">Railway RRB Group D Result 2025</a></li>
+                    <li><a href="#">IBPS PO 2024 Final Result</a></li>
+                    <li><a href="#">UP Police SI 2024 Final Merit List</a></li>
+                    <li><a href="#">CTET July 2025 Result – Check Score Card</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">BPSC 69th Prelims Result 2025</a></li>
+                    <li><a href="#">SSC CHSL 2024 Tier II Result</a></li>
+                    <li><a href="#">Indian Navy SSR / MR Result</a></li>
+                    <li><a href="#">MPPSC SSE 2023 Final Result</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== ADMIT CARDS ===== -->
+        <section class="card" id="admit-cards">
+            <div class="card-header bg-green">Admit Cards</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#">SSC CGL 2025 Tier II Admit Card</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">Railway RRB NTPC CBT 2 Admit Card</a></li>
+                    <li><a href="#">UPPSC RO / ARO 2025 Admit Card</a></li>
+                    <li><a href="#">IBPS Clerk Prelims Admit Card 2025</a></li>
+                    <li><a href="#">Indian Army TES 52 SSB Call Letter</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">UP Police Constable PET Admit Card</a></li>
+                    <li><a href="#">NDA 2 2025 Admit Card Released</a></li>
+                    <li><a href="#">Delhi Police Constable Exam E-Admit Card</a></li>
+                    <li><a href="#">CISF Constable Tradesman Admit Card</a></li>
+                    <li><a href="#">AFCAT 2 2025 Admit Card</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== SYLLABUS ===== -->
+        <section class="card" id="syllabus">
+            <div class="card-header bg-purple">Syllabus</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#">UP Police Constable Syllabus 2026 – Hindi / English</a></li>
+                    <li><a href="#">SSC CGL 2025 Revised Syllabus PDF</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">Railway RRB NTPC Syllabus 2025</a></li>
+                    <li><a href="#">UPPSC PCS 2025 Mains Syllabus</a></li>
+                    <li><a href="#">IBPS PO Syllabus and Exam Pattern 2025</a></li>
+                    <li><a href="#">NDA Syllabus 2025 – Mathematics & GAT</a></li>
+                    <li><a href="#">CTET Syllabus Paper I & II 2025</a></li>
+                    <li><a href="#">Bihar Police SI Syllabus in Hindi PDF</a></li>
+                    <li><a href="#">Delhi Police Head Constable Syllabus</a></li>
+                    <li><a href="#">MPPSC State Forest Service Syllabus</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== COURSES ===== -->
+        <section class="card" id="courses">
+            <div class="card-header bg-orange">Courses</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#">SSC Complete Foundation Batch 2025 – Online</a></li>
+                    <li><a href="#">UP Police Constable Crash Course</a><span class="new-tag">NEW</span></li>
+                    <li><a href="#">Railway NTPC Special Live Classes</a></li>
+                    <li><a href="#">Banking PO / Clerk Complete Course</a></li>
+                    <li><a href="#">UPPSC PCS Foundation Course Hindi</a></li>
+                    <li><a href="#">CTET Paper I & II Complete Preparation</a></li>
+                    <li><a href="#">NDA Written Exam Coaching – Online</a></li>
+                    <li><a href="#">Delhi Police Constable Live Batch</a></li>
+                    <li><a href="#">Current Affairs Monthly PDF Course</a></li>
+                    <li><a href="#">Maths Special Batch for All Exams</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== JOB TABLE ===== -->
+        <section class="card" id="job-table">
+            <div class="card-header bg-dark">Job Table – Latest Vacancies</div>
+            <div class="card-body" style="padding: 0; overflow-x: auto;">
+                <table class="job-table">
+                    <thead>
+                        <tr>
+                            <th>Post Name</th>
+                            <th>Organization</th>
+                            <th>Last Date</th>
+                            <th>Apply Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>UP Police Constable</td>
+                            <td>UPPRPB</td>
+                            <td>30 June 2026</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>SSC CGL Tier II</td>
+                            <td>SSC</td>
+                            <td>15 July 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>IBPS Clerk 2025</td>
+                            <td>IBPS</td>
+                            <td>21 July 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>Railway NTPC</td>
+                            <td>RRB</td>
+                            <td>10 August 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>Indian Air Force Agniveer</td>
+                            <td>IAF</td>
+                            <td>05 July 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>Delhi Police Head Constable</td>
+                            <td>SSC</td>
+                            <td>25 July 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                        <tr>
+                            <td>Bihar Police SI</td>
+                            <td>BPSSC</td>
+                            <td>12 August 2025</td>
+                            <td><a href="#" class="apply-btn">Apply</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== TOP 10 JOBS TODAY ===== -->
+        <section class="card" id="top10">
+            <div class="card-header bg-maroon">Top 10 Jobs Today</div>
+            <div class="card-body">
+                <ul class="top10-list">
+                    <li><a href="#">UP Police Constable – 50000+ Posts</a></li>
+                    <li><a href="#">SSC CGL 2025 – Group B & C Posts</a></li>
+                    <li><a href="#">Railway RRB NTPC – 35000+ Vacancies</a></li>
+                    <li><a href="#">IBPS PO 2025 – Probationary Officer</a></li>
+                    <li><a href="#">Indian Army Agniveer – All India</a></li>
+                    <li><a href="#">UPPSC PCS 2025 – 250+ Posts</a></li>
+                    <li><a href="#">Bihar Police SI – 1200+ Vacancies</a></li>
+                    <li><a href="#">Rajasthan Patwari – 4000+ Posts</a></li>
+                    <li><a href="#">Delhi Police Head Constable</a></li>
+                    <li><a href="#">MPPSC State Service – 280 Posts</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== STATE-WISE JOBS ===== -->
+        <section class="card" id="state-wise">
+            <div class="card-header bg-navy">State-wise Jobs</div>
+            <div class="tag-grid">
+                <a href="#" class="tag-btn">Uttar Pradesh</a>
+                <a href="#" class="tag-btn">Bihar</a>
+                <a href="#" class="tag-btn">Rajasthan</a>
+                <a href="#" class="tag-btn">Madhya Pradesh</a>
+                <a href="#" class="tag-btn">Haryana</a>
+                <a href="#" class="tag-btn">Delhi</a>
+                <a href="#" class="tag-btn">Maharashtra</a>
+                <a href="#" class="tag-btn">Punjab</a>
+                <a href="#" class="tag-btn">West Bengal</a>
+                <a href="#" class="tag-btn">Tamil Nadu</a>
+                <a href="#" class="tag-btn">Gujarat</a>
+                <a href="#" class="tag-btn">Karnataka</a>
+                <a href="#" class="tag-btn">Odisha</a>
+                <a href="#" class="tag-btn">Jharkhand</a>
+                <a href="#" class="tag-btn">Chhattisgarh</a>
+                <a href="#" class="tag-btn">All India</a>
+            </div>
+        </section>
+
+        <!-- ===== QUALIFICATION-WISE JOBS ===== -->
+        <section class="card" id="qualification-wise">
+            <div class="card-header bg-teal">Qualification-wise Jobs</div>
+            <div class="tag-grid">
+                <a href="#" class="tag-btn">10th Pass</a>
+                <a href="#" class="tag-btn">12th Pass</a>
+                <a href="#" class="tag-btn">Graduate</a>
+                <a href="#" class="tag-btn">Post Graduate</a>
+                <a href="#" class="tag-btn">Diploma</a>
+                <a href="#" class="tag-btn">Engineering</a>
+                <a href="#" class="tag-btn">ITI</a>
+                <a href="#" class="tag-btn">MBBS</a>
+                <a href="#" class="tag-btn">B.Ed</a>
+                <a href="#" class="tag-btn">Law</a>
+                <a href="#" class="tag-btn">CA / CS</a>
+                <a href="#" class="tag-btn">Any Graduate</a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-card">
+            <div class="sidebar-header">Trending Jobs</div>
+            <div class="sidebar-body">
+                <ul>
+                    <li><a href="#">UP Police 50000+ Posts</a></li>
+                    <li><a href="#">SSC CGL Tier II</a></li>
+                    <li><a href="#">Railway NTPC 35000+</a></li>
+                    <li><a href="#">IBPS PO 2025</a></li>
+                    <li><a href="#">Indian Army Agniveer</a></li>
+                    <li><a href="#">Delhi Police HC</a></li>
+                    <li><a href="#">Bihar Police SI</a></li>
+                    <li><a href="#">Rajasthan Patwari</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-header">Important Links</div>
+            <div class="sidebar-body">
+                <ul>
+                    <li><a href="#">SSC Official Website</a></li>
+                    <li><a href="#">UPPSC Portal</a></li>
+                    <li><a href="#">Railway RRB Website</a></li>
+                    <li><a href="#">UPPRPB Website</a></li>
+                    <li><a href="#">IBPS Online</a></li>
+                    <li><a href="#">UPSC Online</a></li>
+                    <li><a href="#">CTET Official</a></li>
+                    <li><a href="#">MPPSC Portal</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-header">Quick Apply</div>
+            <div class="sidebar-body">
+                <a href="#" class="quick-btn qb-red">Apply for UP Police</a>
+                <a href="#" class="quick-btn qb-blue">SSC CGL Apply</a>
+                <a href="#" class="quick-btn qb-green">Railway NTPC</a>
+                <a href="#" class="quick-btn qb-purple">IBPS Clerk</a>
+                <a href="#" class="quick-btn qb-orange">Army Agniveer</a>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-header">Answer Key</div>
+            <div class="sidebar-body">
+                <ul>
+                    <li><a href="#">SSC CGL Tier I Answer Key</a></li>
+                    <li><a href="#">UP Police PET Answer Key</a></li>
+                    <li><a href="#">Railway Group D Answer Key</a></li>
+                    <li><a href="#">IBPS PO Prelims Key</a></li>
+                    <li><a href="#">NDA 1 2025 Answer Key</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-header">Admissions</div>
+            <div class="sidebar-body">
+                <ul>
+                    <li><a href="#">UP B.Ed 2025 Online Form</a></li>
+                    <li><a href="#">Bihar D.El.Ed Admission</a></li>
+                    <li><a href="#">MP B.Ed Entrance Test</a></li>
+                    <li><a href="#">Rajasthan PTET 2025</a></li>
+                    <li><a href="#">Haryana B.Ed Entrance</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </aside>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="contact">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h3>About Us</h3>
+            <p style="font-size:0.9rem; color:#aaa; line-height:1.6;">
+                Sarkari Result Clone is your one-stop destination for all government job notifications, 
+                exam results, admit cards, answer keys, and syllabus updates across India.
+            </p>
+        </div>
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Latest Jobs</a></li>
+                <li><a href="#">Results</a></li>
+                <li><a href="#">Admit Card</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h3>Legal</h3>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Disclaimer</a></li>
+                <li><a href="#">Terms of Use</a></li>
+                <li><a href="#">DMCA Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h3>Contact Info</h3>
+            <ul>
+                <li>Email: info@sarkariresultclone.com</li>
+                <li>Phone: +91-9876543210</li>
+                <li>Address: New Delhi, India</li>
+                <li>Working Hours: 10 AM – 6 PM</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2025 Sarkari Result Clone. All rights reserved. | Made for educational purposes.
+    </div>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+    // ===== SEARCH FUNCTIONALITY =====
+    function performSearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        const allItems = document.querySelectorAll('.card-body li, .job-table tbody tr, .tag-btn, .sidebar-body li');
+
+        if (!query) {
+            // Show all if empty
+            allItems.forEach(item => item.classList.remove('hidden-item'));
+            return;
+        }
+
+        allItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(query)) {
+                item.classList.remove('hidden-item');
+            } else {
+                item.classList.add('hidden-item');
+            }
+        });
+    }
+
+    // Live search on typing
+    document.getElementById('searchInput').addEventListener('input', performSearch);
+
+    // ===== SMOOTH SCROLL =====
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
